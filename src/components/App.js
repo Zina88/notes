@@ -4,18 +4,23 @@ import Search from './Search';
 import NoteList from './NoteList';
 
 import { nanoid } from 'nanoid';
-import './App.css';
 
 const App = () => {
   const [notes, setNotes] = useState(
     () => JSON.parse(localStorage.getItem('react-notes-app-data')) ?? [],
   );
   const [searchText, setSearchText] = useState('');
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(
+    () => JSON.parse(localStorage.getItem('theme')) ?? [],
+  );
 
   useEffect(() => {
     window.localStorage.setItem('react-notes-app-data', JSON.stringify(notes));
   }, [notes]);
+
+  useEffect(() => {
+    window.localStorage.setItem('theme', JSON.stringify(darkMode));
+  }, [darkMode]);
 
   const addNote = text => {
     const date = new Date();
@@ -36,7 +41,10 @@ const App = () => {
   return (
     <div className={`${darkMode && 'dark-mode'}`}>
       <div className="container">
-        <Header handleToggleDarkMode={setDarkMode} />
+        <Header
+          handleToggleDarkMode={setDarkMode}
+          children={!darkMode ? 'Dark Mode' : 'Light Mode'}
+        />
         <Search handleSearchNote={setSearchText} />
         <NoteList
           notes={notes.filter(note =>
